@@ -11,10 +11,10 @@ import pandas as pd
 df = preprocess_data()
 
 # Initialize Dash app
-app = dash.Dash(__name__)
+dashboard_app = dash.Dash(__name__)
 
 # Define app layout
-app.layout = html.Div([
+dashboard_app.layout = html.Div([
 
     # Header with logos
     html.Div([
@@ -47,15 +47,15 @@ app.layout = html.Div([
     ]),
     
     # Callbacks
-    update_small_boxes_callback(app),
-    update_table_callback(app),
-    update_small_boxes_dashboard_callback(app),
-    update_charts_callback(app)
+    update_small_boxes_callback(dashboard_app),
+    update_table_callback(dashboard_app),
+    update_small_boxes_dashboard_callback(dashboard_app),
+    update_charts_callback(dashboard_app)
     
 ])
 
 # Callback to switch tabs
-@app.callback(
+@dashboard_app.callback(
     Output('tabs', 'value'),
     [Input('table-button', 'n_clicks')]
 )
@@ -65,4 +65,4 @@ def switch_tabs(n_clicks):
     return 'table-tab'
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    dashboard_app.run_server(debug=True)
