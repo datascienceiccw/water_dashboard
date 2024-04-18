@@ -8,7 +8,7 @@ from get_data import fetch_data_from_api
 from data_processing import preprocess_data, filter_data
 import pandas as pd
 
-df = preprocess_data()
+df = pd.read_csv('data.csv')
 
 # Initialize Dash app
 app = dash.Dash(__name__)
