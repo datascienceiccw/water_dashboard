@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output
 from table_layout import table_layout, update_small_boxes_callback, update_table_callback
 from dashboard import create_charts, update_charts_callback, update_small_boxes_dashboard_callback
 from get_data import fetch_data_from_api
-from data_processing import preprocess_data, filter_data
+from data_processing import filter_data
 import pandas as pd
 
 df = pd.read_csv('data.csv')
