@@ -5,16 +5,23 @@ from dash.dependencies import Input, Output
 from table_layout import table_layout, update_small_boxes_callback, update_table_callback
 from dashboard import create_charts, update_charts_callback, update_small_boxes_dashboard_callback
 from get_data import fetch_data_from_api
-from data_processing import filter_data
+from data_processing import preprocess_data, filter_data
 import pandas as pd
 
-df = pd.read_csv('data.csv')
+df = preprocess_data()
 
 # Initialize Dash app
 app = dash.Dash(__name__)
 
 # Define app layout
 app.layout = html.Div([
+
+    # Header with logos
+    html.Div([
+        html.Img(src="static/iccw_logo.png", style={'height':'80px', 'width':'auto', 'float':'left'}),
+        html.H1("Gandhipura Data Dashboard", style={'text-align':'center', 'flex-grow':'1', 'color':'white'}),
+        html.Img(src="static/water dashboard.png", style={'height':'80px', 'width':'auto', 'float':'right'}),
+    ], style={'display':'flex', 'justify-content':'space-between', 'align-items':'center', 'padding':'20px', 'background-color':'#000000', 'border-bottom':'1px solid #ddd'}),
     
     # Tabs for dashboard and table
     dcc.Tabs(id='tabs', value='table-tab', children=[
