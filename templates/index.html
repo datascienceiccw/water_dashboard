@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<h1>Data Dashboard</h1>
+
+<!-- Date range dropdowns -->
+<label for="start_date">Start Date:</label>
+<input type="date" id="start_date">
+<label for="end_date">End Date:</label>
+<input type="date" id="end_date">
+<button id="update_button">Update</button>
+
+<!-- Line charts -->
+<div id="line_charts"></div>
+
+<!-- Donut charts -->
+<div id="donut_charts"></div>
+
+<script>
+    // Initial data
+    const data = JSON.parse(`[
+        {
+            "timestamp": "15-Apr-2024 14:04:47",
+            "inputflow": 57608,
+            "outputflow": 30859.92,
+            "inputtds": 763.05,
+            "outputtds": 5.34,
+            "output_fluoride": 0
+        },
+        // ... (other data entries)
+    ]`);
+
+    // Function to filter data by date range
+    function filterData(startDate, endDate) {
+        return data.filter(entry => {
+            const timestamp = new Date(entry.timestamp);
+            return timestamp >= startDate && timestamp <= endDate;
+        });
+    }
+
+    // Function to update charts
+    function updateCharts() {
+        const startDate = new Date($("#start_date").val());
+        const endDate = new Date($("#end_date").val());
+        const filteredData = filterData(startDate, endDate);
+
+        // Line charts
+        const lineChartData = [
+            {
+                x: filteredData.map(entry => new Date(entry.timestamp)),
+                y: filteredData.map(entry => entry.inputflow),
+                mode: 'lines',
+                name: 'Input Flow'
+            },
+            {
+                x: filteredData.map(entry => new Date(entry.timestamp)),
+                y: filteredData.map(entry => entry.outputflow),
+                mode: 'lines',
+                name: 'Output Flow'
+            },
+            {
+                x: filteredData.map(entry => new Date(entry.timestamp)),
+                y: filteredData.map(entry => entry.inputtds),
+                mode: 'lines',
+                name: 'Input TDS'
+            },
+            {
+                x: filteredData.map(entry => new Date(entry.timestamp)),
+                y: filteredData.map(entry => entry.outputtds),
+                mode: 'lines',
+                name: 'Output TDS'
+            },
+            {
+                x: filteredData.map(entry => new Date(entry.timestamp)),
+                y: filteredData.map(entry => entry.output_fluoride),
+                mode: 'lines',
+                name: 'Output Fluoride'
+            }
+        ];
+        Plotly.newPlot('line_charts', lineChartData);
+
+        // Donut charts
+        const totalInputFlow = filteredData.reduce((acc, entry) => acc + entry.inputflow, 0);
+        const totalOutputFlow = filteredData.reduce((acc, entry) => acc + entry.outputflow, 0);
+        const totalInputTDS = filteredData.reduce((acc, entry) => acc + entry.inputtds, 0);
+        const totalOutputTDS = filteredData.reduce((acc, entry) => acc + entry.outputtds, 0);
+
+        const donutChartInputFlow = [{
+            values: [totalInputFlow, totalOutputFlow],
+            labels: ['Input Flow', 'Output Flow'],
+            type: 'pie'
+        }];
+        const donutChartInputTDS = [{
+            values: [totalInputTDS, totalOutputTDS],
+            labels: ['Input TDS', 'Output TDS'],
+            type: 'pie'
+        }];
+        
+        Plotly.newPlot('donut_charts', donutChartInputFlow);
+        Plotly.newPlot('donut_charts', donutChartInputTDS);
+    }
+
+    // Initial chart rendering
+    updateCharts();
+
+    // Update charts when date range is changed
+    $("#update_button").click(updateCharts);
+</script>
+
+</body>
+</html>
