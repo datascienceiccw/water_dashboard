@@ -1,5 +1,6 @@
 import dash
-import dash_html_components as html
+# import dash_html_components as html
+from dash import html
 from dash import dcc
 from dash.dependencies import Input, Output
 from table_layout import table_layout, update_small_boxes_callback, update_table_callback
