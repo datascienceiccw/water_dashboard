@@ -1,4 +1,5 @@
-import dash_html_components as html
+#import dash_html_components as html
+from dash import html
 from dash import dcc
 from dash.dependencies import Input, Output
 from data_processing import filter_data, preprocess_data
