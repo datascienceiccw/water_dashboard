@@ -20,9 +20,9 @@ dashboard_app.layout = html.Div([
     # Header with logos
     html.Div([
         html.Img(src="static/iccw_logo.png", style={'height':'80px', 'width':'auto', 'float':'left'}),
-        html.H1("Gandhipura Data Dashboard", style={'text-align':'center', 'flex-grow':'1', 'color':'white'}),
+        html.H1("Gandhipura Drinking Water Kiosk Dashboard", style={'text-align':'center', 'flex-grow':'1', 'color':'white'}),
         html.Img(src="static/water dashboard.png", style={'height':'80px', 'width':'auto', 'float':'right'}),
-    ], style={'display':'flex', 'justify-content':'space-between', 'align-items':'center', 'padding':'20px', 'background-color':'#000000', 'border-bottom':'1px solid #ddd'}),
+     ], style={'display':'flex', 'justify-content':'space-between', 'align-items':'center', 'padding':'20px', 'background-color':'#000000', 'border-bottom':'1px solid #ddd'}),
     
     # Tabs for dashboard and table
     dcc.Tabs(id='tabs', value='table-tab', children=[
