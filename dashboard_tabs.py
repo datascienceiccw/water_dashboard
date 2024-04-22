@@ -66,4 +66,4 @@ def switch_tabs(n_clicks):
     return 'table-tab'
 
 if __name__ == '__main__':
-    dashboard_app.run_server(debug=False)
+    dashboard_app.run_server(debug=False, port=8000)
