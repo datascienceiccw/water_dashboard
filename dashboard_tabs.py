@@ -4,7 +4,7 @@ from dash import html
 from dash import dcc
 from dash.dependencies import Input, Output
 from table_layout import table_layout, update_small_boxes_callback, update_table_callback
-from dashboard import create_charts, update_charts_callback, update_small_boxes_dashboard_callback
+from dashboard import create_charts, update_charts_callback, update_small_boxes_dashboard_callback, operations_mode
 from get_data import fetch_data_from_api
 from data_processing import preprocess_data, filter_data
 import pandas as pd
@@ -55,6 +55,7 @@ dashboard_app.layout = html.Div([
     # update_small_boxes_callback(dashboard_app, df),
     # update_table_callback(dashboard_app, df),
     update_small_boxes_dashboard_callback(dashboard_app, df),
+    operations_mode(dashboard_app),
     update_charts_callback(dashboard_app)
     
 ])
