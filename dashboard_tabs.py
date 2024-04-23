@@ -8,6 +8,7 @@ from dashboard import create_charts, update_charts_callback, update_small_boxes_
 from get_data import fetch_data_from_api
 from data_processing import preprocess_data, filter_data
 import pandas as pd
+import os
 
 df = preprocess_data()
 
@@ -66,4 +67,5 @@ def switch_tabs(n_clicks):
     return 'table-tab'
 
 if __name__ == '__main__':
-    dashboard_app.run_server(debug=False, port=8000)
+    port = int(os.environ.get('PORT', 4000))
+    dashboard_app.run(host='0.0.0.0', port=port)
