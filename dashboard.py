@@ -5,27 +5,27 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 from get_data import fetch_data_from_api
-from data_processing import filter_data, preprocess_data
+from data_processing import filter_data, preprocess_data, filter_data_daily, filter_data_weekly, filter_data_monthly
 from dateutil import parser
 import plotly.express as px
 
 
 
-df = preprocess_data()
-
-
-def create_charts():
+def create_charts(df):
 
 
     return html.Div([
 
-        # Small boxes with outlines
         html.Div([
-            html.Div(id='current-dashboard-inputflow', style={'display':'inline-block', 'margin':'10px', 'border':'1px solid #ccc', 'padding':'30px', 'background-color':'#f9f9f9', 'font-weight':'bold', 'font-size':'24px'}),
-            html.Div(id='current-dashboard-outputflow', style={'display':'inline-block', 'margin':'10px', 'border':'1px solid #ccc', 'padding':'30px', 'background-color':'#f9f9f9', 'font-weight':'bold', 'font-size':'24px'}),
-            html.Div(id='current-dashboard-inputtds', style={'display':'inline-block', 'margin':'10px', 'border':'1px solid #ccc', 'padding':'30px', 'background-color':'#f9f9f9', 'font-weight':'bold', 'font-size':'24px'}),
-            html.Div(id='current-dashboard-outputtds', style={'display':'inline-block', 'margin':'10px', 'border':'1px solid #ccc', 'padding':'30px', 'background-color':'#f9f9f9', 'font-weight':'bold', 'font-size':'24px'}),
-        ], style={'margin':'20px 0'}),
+            html.Div(id='current-dashboard-inputflow', 
+                    style={'display':'inline-block', 'margin':'15px', 'border':'1px solid #ccc', 'padding':'20px', 'width':'20%', 'height':'30%', 'background-color':'#f9f9f9', 'font-weight':'bold', 'font-size':'20px'}),
+            html.Div(id='current-dashboard-outputflow', 
+                    style={'display':'inline-block', 'margin':'15px', 'border':'1px solid #ccc', 'padding':'20px', 'width':'20%', 'height':'30%', 'background-color':'#f9f9f9', 'font-weight':'bold', 'font-size':'20px'}),
+            html.Div(id='current-dashboard-inputtds', 
+                    style={'display':'inline-block', 'margin':'15px', 'border':'1px solid #ccc', 'padding':'20px', 'width':'20%', 'height':'30%', 'background-color':'#f9f9f9', 'font-weight':'bold', 'font-size':'20px'}),
+            html.Div(id='current-dashboard-outputtds', 
+                    style={'display':'inline-block', 'margin':'15px', 'border':'1px solid #ccc', 'padding':'20px', 'width':'20%', 'height':'30%', 'background-color':'#f9f9f9', 'font-weight':'bold', 'font-size':'20px'}),
+        ], style={'margin':'20px 0', 'text-align': 'center'}),
         
         # Date selection
         html.Div([
@@ -45,7 +45,22 @@ def create_charts():
                     date=df['timestamp'].max(),
                     display_format='DD-MM-YYYY'
                 )
-            ], style={'width':'50%', 'display':'inline-block', 'text-align':'right'})
+            ], style={'width':'50%', 'display':'inline-block', 'text-align':'right'}),
+
+            html.Div([
+                html.Label('Report Type', style={'display':'block', 'margin-bottom':'5px', 'text-align':'right', 'margin-right':'10px'}),
+                dcc.Dropdown(
+                    id='report-type-dropdown',
+                    options=[
+                        {'label':'Show all', 'value':'show_all'},
+                        {'label': 'Daily', 'value': 'daily'},
+                        {'label': 'Weekly', 'value': 'weekly'},
+                        {'label': 'Monthly', 'value': 'monthly'}
+                    ],
+                    value='show_all'
+                )
+            ], style={'width':'30%', 'display':'inline-block', 'text-align':'right'})
+
         ], style={'margin':'20px 0'}),
 
         # Charts
@@ -83,7 +98,7 @@ def create_charts():
     ])
 
 # Callback to update small boxes
-def update_small_boxes_dashboard_callback(app):
+def update_small_boxes_dashboard_callback(app, df):
     @app.callback(
         [
          Output('current-dashboard-inputflow', 'children'),
@@ -130,11 +145,19 @@ def update_charts_callback(app):
         Output('line-chart1', 'figure'),
         Output('line-chart2', 'figure'),],
         [Input('from-date-picker', 'date'),
-        Input('to-date-picker', 'date')]
+        Input('to-date-picker', 'date'),
+        Input('report-type-dropdown', 'value')]
     )
-    def update_charts(from_date, to_date):
-        
-        filtered_df = filter_data(df, from_date, to_date)
+    def update_charts(from_date, to_date, report_type):
+
+        if report_type == 'daily':
+            filtered_df = filter_data_daily(from_date, to_date)
+        elif report_type == 'weekly':
+            filtered_df = filter_data_weekly(from_date, to_date)
+        elif report_type == 'monthly':
+            filtered_df = filter_data_monthly(from_date, to_date)
+        else:            
+            filtered_df = filter_data(from_date, to_date)
 
         values2 = [(filtered_df['inputtds'] - filtered_df['outputtds']).mean(), (filtered_df['outputtds']).mean()]
         # Update pie charts

@@ -1,13 +1,13 @@
 #import dash_html_components as html
 from dash import html
 from dash import dcc
+import dash
 from dash.dependencies import Input, Output
-from data_processing import filter_data, preprocess_data
+from data_processing import filter_data, preprocess_data, filter_data_daily, filter_data_weekly, filter_data_monthly
 import pandas as pd
 
-df = preprocess_data()
 
-def table_layout():
+def table_layout(df):
     return html.Div([
         
         # Small boxes with outlines
@@ -38,18 +38,31 @@ def table_layout():
                     display_format='DD-MM-YYYY',
                     style={'width':'100%', 'padding':'10px'}
                 )
-            ], style={'width':'50%', 'display':'inline-block',})
+            ], style={'width':'50%', 'display':'inline-block',}),
+            html.Div([
+                html.Label('Report Type', style={'display':'block', 'margin-bottom':'5px', 'text-align':'right', 'margin-right':'10px'}),
+                dcc.Dropdown(
+                    id='report-type-dropdown-table',
+                    options=[
+                        {'label':'Show all', 'value':'show_all'},
+                        {'label': 'Daily', 'value': 'daily'},
+                        {'label': 'Weekly', 'value': 'weekly'},
+                        {'label': 'Monthly', 'value': 'monthly'}
+                    ],
+                    value='show_all'
+                )
+            ], style={'width':'30%', 'display':'inline-block', 'text-align':'right'})
         ], style={'margin':'20px 0'}),
         
         # Table with outlines
         html.Div([
             html.Table(id='data-table', style={'border':'1px solid #ccc', 'width':'100%', 'border-collapse':'collapse'}),
-        ], style={'margin':'20px 0'})
+        ], style={'margin':'20px 0'}),
         
     ], style={'margin':'20px 0'})
 
 # Callback to update small boxes
-def update_small_boxes_callback(app):
+def update_small_boxes_callback(app, df):
     @app.callback(
         [
          Output('current-inputflow', 'children'),
@@ -95,27 +108,36 @@ def update_small_boxes_callback(app):
 
 
 # Callback to update table
-def update_table_callback(app):
+def update_table_callback(app, df):
     @app.callback(
         Output('data-table', 'children'),
         [Input('table-from-date-picker', 'date'),
-         Input('table-to-date-picker', 'date')]
+         Input('table-to-date-picker', 'date'),
+         Input('report-type-dropdown-table', 'value')]
     )
-    def update_table(from_date, to_date):
-        filtered_df = filter_data(df, from_date, to_date)
+    def update_table(from_date, to_date, report_type):
+        if report_type == 'daily':
+            filtered_df = filter_data_daily(from_date, to_date)
+        elif report_type == 'weekly':
+            filtered_df = filter_data_weekly(from_date, to_date)
+        elif report_type == 'monthly':
+            filtered_df = filter_data_monthly(from_date, to_date)
+        else:            
+            filtered_df = filter_data(from_date, to_date)
         return generate_table(filtered_df)
 
 # Function to generate table
 def generate_table(dataframe, max_rows=10):
-    dataframe = dataframe.rename(columns={'inputflow':'input flow (in l)', 'outputflow': 'output flow (in l)', 'inputtds':'input tds (in ppm)', 'outputtds':'output tds (in ppm)'})
-    dataframe.drop(['output_fluoride', 'timestamp', '_id'], axis=1, inplace=True)
+    df = dataframe.copy()
+    df = df.rename(columns={'inputflow':'input flow (in l)', 'outputflow': 'output flow (in l)', 'inputtds':'input tds (in ppm)', 'outputtds':'output tds (in ppm)'})
+    df = df.drop(['output_fluoride', 'timestamp', '_id'], axis=1, inplace=False)
     return html.Table(
         # Header
-        [html.Tr([html.Th(col) for col in dataframe.columns], style={'border':'1px solid #ccc', 'background-color':'#53E8E8', 'font-weight':'bold'})] +
+        [html.Tr([html.Th(col) for col in df.columns], style={'border':'1px solid #ccc', 'background-color':'#53E8E8', 'font-weight':'bold'})] +
 
         # Body
         [html.Tr([
-            html.Td(dataframe.iloc[i][col], style={'border':'1px solid #ccc', 'padding':'8px', 'font-size':'16px'}) for col in dataframe.columns
-        ], style={'background-color':'#ffffff'}) for i in range(min(len(dataframe), max_rows))],
+            html.Td(df.iloc[i][col], style={'border':'1px solid #ccc', 'padding':'8px', 'font-size':'16px'}) for col in df.columns
+        ], style={'background-color':'#ffffff'}) for i in range(min(len(df), max_rows))],
         style={'border-collapse':'collapse', 'width':'100%'}
     )
