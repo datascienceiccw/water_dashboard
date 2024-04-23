@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 from get_data import fetch_data_from_api
-from data_processing import filter_data, preprocess_data, filter_data_daily, filter_data_weekly, filter_data_monthly
+from data_processing import filter_data, preprocess_data, filter_data_daily, filter_data_weekly, filter_data_monthly, filter_data_hourly
 from dateutil import parser
 import plotly.express as px
 
@@ -26,6 +26,20 @@ def create_charts(df):
             html.Div(id='current-dashboard-outputtds', 
                     style={'display':'inline-block', 'margin':'15px', 'border':'1px solid #ccc', 'padding':'20px', 'width':'20%', 'height':'30%', 'background-color':'#f9f9f9', 'font-weight':'bold', 'font-size':'20px'}),
         ], style={'margin':'20px 0', 'text-align': 'center'}),
+
+        html.Div([
+            html.Div(id='data-status', className='status-circle', style={
+                'display':'flex',
+                'margin':'15px', 
+                'border':'1px solid #ccc', 
+                'padding':'20px', 
+                'width':'95%', 
+                'height':'30%', 
+                'background-color':'#f9f9f9', 
+                'font-weight':'bold', 
+                'font-size':'20px',
+                'text-align':'center'}),
+        ]),
         
         # Date selection
         html.Div([
@@ -134,6 +148,28 @@ def update_small_boxes_dashboard_callback(app, df):
                 f"Current Output TDS (avg. over an hour): {round(avg_output_tds,2)} ppm")
                 # f"Current Input TDS: {df['inputtds'].iloc[-1]} ppm",
                 # f"Current Output TDS: {df['outputtds'].iloc[-1]} ppm")
+
+
+# callback for operations mode
+def operations_mode(app):
+    @app.callback(
+    Output('data-status', 'children'),
+    [Input('from-date-picker', 'date'),
+     Input('to-date-picker', 'date')]
+    )
+    def update_data_status(from_date, to_date):
+        last_hour = pd.Timestamp.now() - pd.Timedelta(hours=1)
+        last_24_hours = pd.Timestamp.now() - pd.Timedelta(hours=24)
+        
+        hourly_data = filter_data_hourly(from_date, to_date)
+        
+        if last_hour < hourly_data['timestamp'].max():
+            return "🟢 Plant Operations Mode"
+        elif last_24_hours < hourly_data['timestamp'].max():
+            return "🟡 Plant Operations Mode"
+        else:
+            return "🔴 Plant Operations Mode"
+
 
         
     # Callback to update charts based on date selection
