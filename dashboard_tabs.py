@@ -25,45 +25,48 @@ dashboard_app.layout = html.Div([
      ], style={'display':'flex', 'justify-content':'space-between', 'align-items':'center', 'padding':'20px', 'background-color':'#000000', 'border-bottom':'1px solid #ddd'}),
     
     # Tabs for dashboard and table
-    dcc.Tabs(id='tabs', value='table-tab', children=[
+    # dcc.Tabs(id='tabs', value='table-tab', children=[
 
-        # Table tab  
-        dcc.Tab(label='Table', value='table-tab', children=[
-            table_layout()
-        ]),
+    #     # Table tab  
+    #     dcc.Tab(label='Table', value='table-tab', children=[
+    #         table_layout(df)
+    #     ]),
         
-        # Dashboard tab
-        dcc.Tab(label='Dashboard', value='dashboard-tab', children=[
-            create_charts(),
+    #     # Dashboard tab
+    #     dcc.Tab(label='Dashboard', value='dashboard-tab', children=[
+    #         create_charts(df),
             
-            # Navigation button
-            html.Div([
-                html.Button('Go to Table', id='table-button', n_clicks=0, 
-                            style={'display':'block', 'margin':'20px auto', 'padding':'10px 20px', 
-                                   'font-size':'16px', 'background-color':'#007BFF', 'color':'#fff', 
-                                   'border':'none', 'border-radius':'4px', 'cursor':'pointer'})
-            ], style={'text-align':'center'})
-        ]),
+    #         # Navigation button
+    #         html.Div([
+    #             html.Button('Go to Table', id='table-button', n_clicks=0, 
+    #                         style={'display':'block', 'margin':'20px auto', 'padding':'10px 20px', 
+    #                                'font-size':'16px', 'background-color':'#007BFF', 'color':'#fff', 
+    #                                'border':'none', 'border-radius':'4px', 'cursor':'pointer'})
+    #         ], style={'text-align':'center'})
+    #     ]),
         
+    # ]),
+    html.Div([
+        create_charts(df)
     ]),
     
     # Callbacks
-    update_small_boxes_callback(dashboard_app),
-    update_table_callback(dashboard_app),
-    update_small_boxes_dashboard_callback(dashboard_app),
+    # update_small_boxes_callback(dashboard_app, df),
+    # update_table_callback(dashboard_app, df),
+    update_small_boxes_dashboard_callback(dashboard_app, df),
     update_charts_callback(dashboard_app)
     
 ])
 
 # Callback to switch tabs
-@dashboard_app.callback(
-    Output('tabs', 'value'),
-    [Input('table-button', 'n_clicks')]
-)
-def switch_tabs(n_clicks):
-    if n_clicks:
-        return 'dashboard-tab'
-    return 'table-tab'
+# @dashboard_app.callback(
+#     Output('tabs', 'value'),
+#     [Input('table-button', 'n_clicks')]
+# )
+# def switch_tabs(n_clicks):
+#     if n_clicks:
+#         return 'dashboard-tab'
+#     return 'table-tab'
 
 if __name__ == '__main__':
     dashboard_app.run_server(debug=False, port=8000)
