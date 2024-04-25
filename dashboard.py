@@ -40,9 +40,26 @@ def create_charts(df):
                 'font-size':'20px',
                 'text-align':'center'}),
         ]),
-        
+
+
+         html.Div([
+                html.Label('Report Type', style={'display':'block', 'margin-bottom':'5px', 'text-align':'right', 'margin-right':'10px'}),
+                dcc.Dropdown(
+                    id='report-type-dropdown',
+                    options=[
+                        {'label':'Show all', 'value':'show_all'},
+                        {'label': 'Daily', 'value': 'daily'},
+                        {'label': 'Weekly', 'value': 'weekly'},
+                        {'label': 'Monthly', 'value': 'monthly'}
+                    ],
+                    value='show_all'
+                )
+            ], style={'width':'30%', 'display':'inline-block', 'text-align':'left'}),
+
+
         # Date selection
         html.Div([
+            html.H3("Select Date Range", style={'text-align':'center', 'flex-grow':'1'}),
             html.Div([
                 html.Label('From Date', style={'display':'block', 'margin-bottom':'5px', 'text-align':'right', 'margin-right':'10px'}),
                 dcc.DatePickerSingle(
@@ -61,21 +78,7 @@ def create_charts(df):
                 )
             ], style={'width':'50%', 'display':'inline-block', 'text-align':'right'}),
 
-            html.Div([
-                html.Label('Report Type', style={'display':'block', 'margin-bottom':'5px', 'text-align':'right', 'margin-right':'10px'}),
-                dcc.Dropdown(
-                    id='report-type-dropdown',
-                    options=[
-                        {'label':'Show all', 'value':'show_all'},
-                        {'label': 'Daily', 'value': 'daily'},
-                        {'label': 'Weekly', 'value': 'weekly'},
-                        {'label': 'Monthly', 'value': 'monthly'}
-                    ],
-                    value='show_all'
-                )
-            ], style={'width':'30%', 'display':'inline-block', 'text-align':'right'})
-
-        ], style={'margin':'20px 0'}),
+        ], style={'margin':'20px 0'}),    
 
         # Charts
         # html.Div([
@@ -163,12 +166,12 @@ def operations_mode(app):
         
         hourly_data = filter_data_hourly(from_date, to_date)
         
-        if last_hour < hourly_data['timestamp'].max():
-            return "🟢 Plant Operations Mode"
-        elif last_24_hours < hourly_data['timestamp'].max():
+        if last_24_hours > hourly_data['timestamp'].iloc[-1]:
+            return "🔴 Plant Operations Mode"
+        elif last_hour > hourly_data['timestamp'].iloc[-1]:
             return "🟡 Plant Operations Mode"
         else:
-            return "🔴 Plant Operations Mode"
+            return "🟢 Plant Operations Mode"
 
 
         
