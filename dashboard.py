@@ -53,7 +53,7 @@ def create_charts(df):
             ], style={'width':'50%', 'display':'inline-block', 'text-align':'right'}),
             
             html.Div([
-                html.Label('To Date', style={'display':'block', 'margin-bottom':'5px', 'text-align':'right', 'margin-right':'10px'}),
+                html.Label('To Date', style={'display':'block', 'margin-bottom':'5px', 'text-align':'left', 'margin-right':'10px'}),
                 dcc.DatePickerSingle(
                     id='to-date-picker',
                     date=df['timestamp'].max(),
