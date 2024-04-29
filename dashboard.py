@@ -18,67 +18,69 @@ def create_charts(df):
 
         html.Div([
             html.Div(id='current-dashboard-inputflow', 
-                    style={'display':'inline-block', 'margin':'15px', 'border':'1px solid #ccc', 'padding':'20px', 'width':'20%', 'height':'30%', 'background-color':'#f9f9f9', 'font-weight':'bold', 'font-size':'20px'}),
+                    style={'display':'inline-block', 'margin':'15px', 'padding':'20px', 'width':'20%', 'height':'30%', 'background-color':'white', 'font-weight':'bold', 'font-size':'20px'}),
             html.Div(id='current-dashboard-outputflow', 
-                    style={'display':'inline-block', 'margin':'15px', 'border':'1px solid #ccc', 'padding':'20px', 'width':'20%', 'height':'30%', 'background-color':'#f9f9f9', 'font-weight':'bold', 'font-size':'20px'}),
+                    style={'display':'inline-block', 'margin':'15px', 'padding':'20px', 'width':'20%', 'height':'30%', 'background-color':'white', 'font-weight':'bold', 'font-size':'20px'}),
             html.Div(id='current-dashboard-inputtds', 
-                    style={'display':'inline-block', 'margin':'15px', 'border':'1px solid #ccc', 'padding':'20px', 'width':'20%', 'height':'30%', 'background-color':'#f9f9f9', 'font-weight':'bold', 'font-size':'20px'}),
+                    style={'display':'inline-block', 'margin':'15px', 'padding':'20px', 'width':'20%', 'height':'30%', 'background-color':'white', 'font-weight':'bold', 'font-size':'20px'}),
             html.Div(id='current-dashboard-outputtds', 
-                    style={'display':'inline-block', 'margin':'15px', 'border':'1px solid #ccc', 'padding':'20px', 'width':'20%', 'height':'30%', 'background-color':'#f9f9f9', 'font-weight':'bold', 'font-size':'20px'}),
+                    style={'display':'inline-block', 'margin':'15px', 'padding':'20px', 'width':'20%', 'height':'30%', 'background-color':'white', 'font-weight':'bold', 'font-size':'20px'}),
         ], style={'margin':'20px 0', 'text-align': 'center'}),
 
+        # Boxes layout
         html.Div([
-            html.Div(id='data-status', className='status-circle', style={
-                'display':'flex',
-                'margin':'15px', 
-                'border':'1px solid #ccc', 
-                'padding':'20px', 
-                'width':'95%', 
-                'height':'30%', 
-                'background-color':'#f9f9f9', 
-                'font-weight':'bold', 
-                'font-size':'20px',
-                'text-align':'center'}),
-        ]),
-
-
-         html.Div([
-                html.Label('Report Type', style={'display':'block', 'margin-bottom':'5px', 'text-align':'right', 'margin-right':'10px'}),
+            # Report type dropdown
+            html.Div([
+                html.Label('Report Type', style={'font-weight': 'bold', 'padding':'10px'}),
                 dcc.Dropdown(
                     id='report-type-dropdown',
                     options=[
-                        {'label':'Show all', 'value':'show_all'},
+                        {'label': 'Show all', 'value': 'show_all'},
                         {'label': 'Daily', 'value': 'daily'},
                         {'label': 'Weekly', 'value': 'weekly'},
                         {'label': 'Monthly', 'value': 'monthly'}
                     ],
                     value='show_all'
                 )
-            ], style={'width':'30%', 'display':'inline-block', 'text-align':'left'}),
+            ], style={'width': '15%', 'display': 'inline-block', 'margin-right': '10px', 'background-color':'white', 'padding':'20px', 'vertical-align': 'top'}),
 
-
-        # Date selection
-        html.Div([
-            html.H3("Select Date Range", style={'text-align':'center', 'flex-grow':'1'}),
+            # Date selection
             html.Div([
-                html.Label('From Date', style={'display':'block', 'margin-bottom':'5px', 'text-align':'right', 'margin-right':'10px'}),
-                dcc.DatePickerSingle(
-                    id='from-date-picker',
-                    date=df['timestamp'].min(),
-                    display_format='DD-MM-YYYY'
-                )
-            ], style={'width':'50%', 'display':'inline-block', 'text-align':'right'}),
-            
-            html.Div([
-                html.Label('To Date', style={'display':'block', 'margin-bottom':'5px', 'text-align':'left', 'margin-right':'10px'}),
-                dcc.DatePickerSingle(
-                    id='to-date-picker',
-                    date=df['timestamp'].max(),
-                    display_format='DD-MM-YYYY'
-                )
-            ], style={'width':'50%', 'display':'inline-block', 'text-align':'right'}),
+                html.Label('Select Date Range', style={'font-weight': 'bold', 'margin-bottom': '5px', 'margin-right':'20px'}),
+                html.Div([
+                    html.Label('From Date', style={'display': 'block', 'margin-bottom': '5px', 'text-align': 'right'}),
+                    dcc.DatePickerSingle(
+                        id='from-date-picker',
+                        date=df['timestamp'].max() - pd.Timedelta(days=1),
+                        display_format='DD-MM-YYYY'
+                    )
+                ], style={'width': '20%', 'display': 'inline-block', 'text-align': 'right', 'margin-right':'20px'}),
+                html.Div([
+                    html.Label('To Date', style={'display': 'block', 'margin-bottom': '5px', 'text-align': 'right'}),
+                    dcc.DatePickerSingle(
+                        id='to-date-picker',
+                        date=df['timestamp'].max(),
+                        display_format='DD-MM-YYYY'
+                    )
+                ], style={'width': '20%', 'display': 'inline-block', 'text-align': 'right'}),
+            ], style={'width': '45%', 'display': 'inline-block', 'margin-left': '10px', 'background-color':'white', 'margin-right':'20px', 'padding':'10px', 'vertical-align': 'top'}),
 
-        ], style={'margin':'20px 0'}),    
+            # Plant operations mode
+            html.Div([
+                html.Label('Plant Current Running Status', style={'font-weight': 'bold', 'margin-bottom': '2px'}),
+                html.Div(id='data-status', className='status-circle', style={'display': 'inline-block', 
+                                                                        'margin': '15px', 
+                                                                        'border': '1px solid #ccc', 
+                                                                        'padding': '10px', 
+                                                                        'width': '40%', 
+                                                                        'height': '30%',  
+                                                                        'font-weight': 'bold', 
+                                                                        'font-size': '15px', 
+                                                                        'text-align': 'center'}),
+            ], style={'width': '15%', 'display': 'inline-block', 'margin-right': '10px', 'background-color':'white', 'vertical-align': 'top'}),
+
+        ], style={'text-align': 'center', 'margin': '10px auto', 'width': '100%', 'background-color':'#F3F3F3'}),
+
 
         # Charts
         # html.Div([
@@ -112,7 +114,7 @@ def create_charts(df):
             html.Button('View Descriptive Stats', id='stats-button', n_clicks=0, style={'display':'block', 'margin':'20px auto', 'padding':'10px 20px', 'font-size':'16px', 'background-color':'#007BFF', 'color':'#fff', 'border':'none', 'border-radius':'4px', 'cursor':'pointer'})
         ], style={'text-align':'center'})
 
-    ])
+    ],style={'background-color':'#F3F3F3'})
 
 # Callback to update small boxes
 def update_small_boxes_dashboard_callback(app, df):
@@ -167,11 +169,11 @@ def operations_mode(app):
         hourly_data = filter_data_hourly(from_date, to_date)
         
         if last_24_hours > hourly_data['timestamp'].iloc[-1]:
-            return "🔴 Plant Operations Mode"
+            return "🔴 Stopped"
         elif last_hour > hourly_data['timestamp'].iloc[-1]:
-            return "🟡 Plant Operations Mode"
+            return "🟡 Standby"
         else:
-            return "🟢 Plant Operations Mode"
+            return "🟢 Running"
 
 
         
