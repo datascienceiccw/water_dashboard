@@ -4,10 +4,10 @@ from get_data import fetch_data_from_api
 
 # Fetch data from API
 API_URL = "https://mongodbapi-bw4d.onrender.com"
-data = fetch_data_from_api(API_URL)
 
 
 def preprocess_data(date_format="%d-%b-%Y %H:%M:%S"):
+    data = fetch_data_from_api(API_URL)
     df = pd.DataFrame(data)
     df['timestamp'] = pd.to_datetime(df['timestamp'], format=date_format, errors='coerce')
     df.dropna(subset=['timestamp'], inplace=True)
