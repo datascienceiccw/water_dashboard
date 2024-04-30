@@ -31,7 +31,11 @@ def filter_data_daily(from_date, to_date):
     to_date = parser.parse(to_date)
     df = df[(df['timestamp'].dt.date >= from_date.date()) & (df['timestamp'].dt.date <= to_date.date())]
     df.set_index('timestamp', inplace=True)
-    return df.resample('D').agg({'inputflow': 'sum', 'outputflow': 'sum', 'inputtds': 'mean', 'outputtds': 'mean'}).reset_index()
+    water_data = df.resample('D').agg({'inputflow': 'sum', 'outputflow': 'sum'}).reset_index()
+    df = df[(df['inputtds'] != 0)]
+    df = df[(df['outputtds'] != 0)]
+    tds_data = df.resample('D').agg({'inputtds': 'mean', 'outputtds': 'mean'}).reset_index()
+    return water_data.merge(tds_data, how='inner', on='timestamp')
 
 
 def filter_data_weekly(from_date, to_date):
@@ -52,10 +56,12 @@ def filter_data_monthly(from_date, to_date):
     return df.resample('ME').agg({'inputflow': 'sum', 'outputflow': 'sum', 'inputtds': 'mean', 'outputtds': 'mean'}).reset_index()
 
 
-def filter_data_hourly(from_date, to_date):
+def filter_data_hourly():
     df = preprocess_data()
-    from_date = parser.parse(from_date)
-    to_date = parser.parse(to_date)
+    df = df[(df['inputtds'] != 0)]
+    df = df[(df['outputtds'] != 0)]
+    # from_date = parser.parse(from_date)
+    # to_date = parser.parse(to_date)
     df.set_index('timestamp', inplace=True)
     return df.resample('h').agg({'inputflow': 'sum', 'outputflow': 'sum', 'inputtds': 'mean', 'outputtds': 'mean'}).reset_index()
 
