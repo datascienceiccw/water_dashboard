@@ -166,7 +166,7 @@ def operations_mode(app):
         last_hour = pd.Timestamp.now() - pd.Timedelta(hours=1)
         last_24_hours = pd.Timestamp.now() - pd.Timedelta(hours=24)
         
-        hourly_data = filter_data_hourly(from_date, to_date)
+        hourly_data = filter_data_hourly()
         
         if last_24_hours > hourly_data['timestamp'].iloc[-1]:
             return "🔴 Stopped"
