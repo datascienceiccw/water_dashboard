@@ -10,6 +10,13 @@ from dateutil import parser
 import plotly.express as px
 
 
+def create_widgets(df):
+    return html.Div([
+        create_dials(df),
+        create_table_chart(df)
+    ], style={'background-color':'#6E716E', 'color': '#FFFFFF'})
+
+
 def update_dials(df):
     filtered_hourly_data = filter_data_hourly()
 
@@ -20,11 +27,11 @@ def update_dials(df):
     revenue = 0.25 * water_served * 1000
 
     return [
-    {'title': 'Water Served (kl)', 'value': water_served, 'max_value': round((df['outputflow']-10000)/1000,2).max()},
-    {'title': 'Water Saved (kl)', 'value': water_saved, 'max_value': round((0.4*((df['inputflow']-10000)-(df['outputflow']-5000))-0.2*((df['inputflow']-10000)-(df['outputflow']-5000)))/1000,2).max()},
-    {'title': 'Current Input TDS (ppm)', 'value': avg_input_tds, 'max_value': filtered_hourly_data['inputtds'].max()},
-    {'title': 'Current Output TDS (ppm)', 'value': avg_output_tds, 'max_value': filtered_hourly_data['outputtds'].max()},
-    {'title': 'Revenue Generated (in ₹)', 'value': revenue, 'max_value': round((df['outputflow']-10000)/1000,2).max() * 0.25 * 1000},
+    {'title': 'Water Served (kl)', 'value': water_served, 'max_value': round((df['outputflow']-10000)/1000,2).max(), 'color': '#49F8FA'},
+    {'title': 'Water Saved (kl)', 'value': water_saved, 'max_value': round((0.4*((df['inputflow']-10000)-(df['outputflow']-5000))-0.2*((df['inputflow']-10000)-(df['outputflow']-5000)))/1000,2).max(), 'color':'#04B6FE'},
+    {'title': 'Current Input TDS (ppm)', 'value': avg_input_tds, 'max_value': filtered_hourly_data['inputtds'].max(), 'color':'#80370E'},
+    {'title': 'Current Output TDS (ppm)', 'value': avg_output_tds, 'max_value': filtered_hourly_data['outputtds'].max(), 'color': '#FAB994'},
+    {'title': 'Revenue Generated (in ₹)', 'value': revenue, 'max_value': round((df['outputflow']-10000)/1000,2).max() * 0.25 * 1000, 'color':'#36F72C'},
 ]
 
 
@@ -39,14 +46,16 @@ def create_dials(df):
                     value=dial['value'],
                     title=dial['title'],
                     gauge={'axis': {'range': [None, dial['max_value']]},
+                           'bordercolor':'white',
                            'threshold': {
                                'line': {'color': 'red', 'width': 4},
                                'thickness': 0.75,
-                               'value': dial['value']
-                           }
+                               'value': dial['value'],
+                           },
+                           'bar':{'color':dial['color']}
                     }
                 )
-            ], 'layout': go.Layout(height=300)
+            ], 'layout': go.Layout(height=300, plot_bgcolor='#6E716E', paper_bgcolor='#333333', font=dict(color='#FFFFFF'))
         })
 
     return html.Div([
@@ -62,7 +71,7 @@ def create_dials(df):
             dcc.Graph(id='current-dashboard-outputtds', figure=dial_figures[3], style={'display': 'inline-block', 'width': '20%'}),
             dcc.Graph(id='revenue-generated', figure=dial_figures[4], style={'display': 'inline-block', 'width': '20%'}),
         ], style={'margin': '10px 0', 'text-align': 'center'}),
-    ], style={'background-color':'#F3F3F3'})
+    ])
 
 
 def create_table_chart(df):
@@ -95,7 +104,7 @@ def create_table_chart(df):
     }
 
     # Create table rows with separator border lines
-    table_rows = [html.Tr(html.Td(detail, style={'borderBottom': '1px solid #000000', 'padding': '20px'})) for detail in table_data['Plant Details']]
+    table_rows = [html.Tr(html.Td(detail, style={'borderBottom': '1px solid #FFFFFF', 'padding': '20px', 'color': '#FFFFFF'})) for detail in table_data['Plant Details']]
 
     # Create the table
     table = html.Div([
@@ -103,7 +112,7 @@ def create_table_chart(df):
         html.Table(
             # Table body
             [html.Tbody(table_rows)],
-            style={'width':'100%', 'backgroundColor': '#FFFFFF'}
+            style={'width':'100%', 'backgroundColor': '#333333'}
         )
     ], style={'padding': '20px', 'margin': '10px', 'width': '85%'})
 
@@ -112,28 +121,34 @@ def create_table_chart(df):
     
     # Add grouped bar chart
     fig.add_trace(
-        go.Bar(x=daily_data['timestamp'], y=daily_data['inputflow'] / 1000, name='Input Flow'),
+        go.Bar(x=daily_data['timestamp'], y=daily_data['inputflow'] / 1000, name='Input Flow', marker=dict(color='#04B6FE')),
     )
     fig.add_trace(
-        go.Bar(x=daily_data['timestamp'], y=daily_data['outputflow'] / 1000, name='Output Flow'),
+        go.Bar(x=daily_data['timestamp'], y=daily_data['outputflow'] / 1000, name='Output Flow', marker=dict(color='#49F8FA')),
     )
     
     # Add line chart
     fig.add_trace(
-        go.Scatter(x=daily_data['timestamp'], y=daily_data['outputtds'], yaxis='y2', name='Output TDS', mode='lines'),
+        go.Scatter(x=daily_data['timestamp'], y=daily_data['outputtds'], yaxis='y2', name='Output TDS', mode='lines', marker=dict(color='#FAB994', size=20), line=dict(width=3)),
     )
 
     fig.update_layout(height=500, showlegend=True,
                       title='Daily Water Input and Output Flow with Average Output TDS',
-                      xaxis=dict(title='Timestamp', tickfont=dict(size=14)),
-                      yaxis=dict(title='Water Volume (in kl)', side='left', showgrid=False, tickfont=dict(size=12)),
-                      yaxis2=dict(title='Output TDS (in ppm)', overlaying='y', side='right', range=[daily_data['outputtds'].min(), daily_data['outputtds'].max()], showgrid=False, tickfont=dict(size=12)),)
+                      xaxis=dict(title='Timestamp', tickfont=dict(size=14), color='#FFFFFF', showline=True, linecolor='white', linewidth=3),
+                      yaxis=dict(title='Water Volume (in kl)', side='left', showgrid=False, showline=True, tickfont=dict(size=12), color='#FFFFFF', linecolor='white', linewidth=3),
+                      yaxis2=dict(title='Output TDS (in ppm)', overlaying='y', side='right', range=[daily_data['outputtds'].min(), daily_data['outputtds'].max()], showgrid=False, showline=True, tickfont=dict(size=12), color='#FFFFFF', linecolor='white', linewidth=3),
+                      plot_bgcolor='#333333', paper_bgcolor='#333333', font=dict(color='#FFFFFF'),
+                      legend=dict(
+                                    orientation="h",  # "h" for horizontal, "v" for vertical
+                                    x=0.5,  # Position of the legend along the x-axis (0 to 1)
+                                    y=1.1)
+                     )
     
     return html.Div([
         # Plant details table
         html.Div([
             table
-        ], style={'background-color': '#F3F3F3', 'float': 'left', 'width': '27%'}),
+        ], style={'background-color': '#6E716E', 'float': 'left', 'width': '27%'}),
 
         # Combined chart
         html.Div([
