@@ -129,14 +129,14 @@ def create_table_chart(df):
     
     # Add line chart
     fig.add_trace(
-        go.Scatter(x=daily_data['timestamp'], y=daily_data['outputtds'], yaxis='y2', name='Output TDS', mode='lines', marker=dict(color='#FAB994', size=10)),
+        go.Scatter(x=daily_data['timestamp'], y=daily_data['outputtds'], yaxis='y2', name='Output TDS', mode='lines', marker=dict(color='#FAB994', size=20), line=dict(width=3)),
     )
 
     fig.update_layout(height=500, showlegend=True,
                       title='Daily Water Input and Output Flow with Average Output TDS',
-                      xaxis=dict(title='Timestamp', tickfont=dict(size=14), color='#FFFFFF'),
-                      yaxis=dict(title='Water Volume (in kl)', side='left', showgrid=False, tickfont=dict(size=12), color='#FFFFFF'),
-                      yaxis2=dict(title='Output TDS (in ppm)', overlaying='y', side='right', range=[daily_data['outputtds'].min(), daily_data['outputtds'].max()], showgrid=False, tickfont=dict(size=12), color='#FFFFFF'),
+                      xaxis=dict(title='Timestamp', tickfont=dict(size=14), color='#FFFFFF', showline=True, linecolor='white', linewidth=3),
+                      yaxis=dict(title='Water Volume (in kl)', side='left', showgrid=False, showline=True, tickfont=dict(size=12), color='#FFFFFF', linecolor='white', linewidth=3),
+                      yaxis2=dict(title='Output TDS (in ppm)', overlaying='y', side='right', range=[daily_data['outputtds'].min(), daily_data['outputtds'].max()], showgrid=False, showline=True, tickfont=dict(size=12), color='#FFFFFF', linecolor='white', linewidth=3),
                       plot_bgcolor='#333333', paper_bgcolor='#333333', font=dict(color='#FFFFFF'),
                       legend=dict(
                                     orientation="h",  # "h" for horizontal, "v" for vertical
