@@ -15,7 +15,6 @@ def preprocess_data(date_format="%d-%b-%Y %H:%M:%S"):
     df['outputflow'] = df['outputflow'].round().astype(int)
     df['inputtds'] = df['inputtds'].round().astype(int)
     df['outputtds'] = df['outputtds'].round().astype(int)
-    print(df[(df['timestamp']>=(df['timestamp'].iloc[-1] - pd.Timedelta(hours=1)))])
     return df
 
 
@@ -65,6 +64,4 @@ def filter_data_hourly():
     # to_date = parser.parse(to_date)
     df.set_index('timestamp', inplace=True)
     return df.resample('h').agg({'inputflow': 'sum', 'outputflow': 'sum', 'inputtds': 'mean', 'outputtds': 'mean'}).reset_index()
-
-preprocess_data()
 
