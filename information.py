@@ -25,8 +25,8 @@ def update_dials(df):
     filtered_hourly_data = filter_data_hourly()
     filtered_monthly_data = filter_data_monthly(str(df['timestamp'].min()), str(df['timestamp'].max()))
 
-    # water_served = round((df["outputflow"].iloc[-1] - 10000) / 1000, 2)
-    water_served = round(filtered_monthly_data['outputflow'].iloc[-1]/1000, 2)
+    water_served = round((df["outputflow"].iloc[-1] - 10000) / 1000, 2)
+    # water_served = round(filtered_monthly_data['outputflow'].iloc[-1]/1000, 2)
     water_saved = round(
         (
             0.4
@@ -119,7 +119,7 @@ def create_dials(df):
                             html.Span(
                                 update_dials(df)[0][1],
                                 style={
-                                    "font-size": "50px",
+                                    "font-size": "60px",
                                     "margin-right": "3px",
                                     "color": "#010738",
                                 },
@@ -132,8 +132,8 @@ def create_dials(df):
                             "display": "inline-block",
                             "margin": "15px",
                             "padding": "20px",
-                            "width": "16%",
-                            "height": "50%",
+                            "width": "15%",
+                            "height": "45%",
                             "background-color": "white",
                             "font-weight": "bold",
                             "font-size": "20px",
@@ -167,7 +167,7 @@ def create_dials(df):
                             "display": "inline-block",
                             "margin": "15px",
                             "padding": "20px",
-                            "width": "14%",
+                            "width": "15%",
                             "height": "45%",
                             "background-color": "white",
                             "font-weight": "bold",
@@ -332,25 +332,33 @@ def create_table_chart(df):
     fig = go.Figure()
 
     # Add area chart for input flow
-    fig.add_trace(
-        go.Scatter(
-            x=daily_data["timestamp"],
-            y=daily_data["inputflow"] / 1000,
-            mode="lines",
-            name="Input Flow",
-            line=dict(color="#04B6FE"),
-        )
-    )
+    # fig.add_trace(
+    #     go.Scatter(
+    #         x=daily_data["timestamp"],
+    #         y=daily_data["inputflow"] / 1000,
+    #         mode="lines",
+    #         name="Input Flow",
+    #         line=dict(color="#04B6FE"),
+    #     )
+    # )
 
     # Add area chart for output flow
+    # fig.add_trace(
+    #     go.Scatter(
+    #         x=daily_data["timestamp"],
+    #         y=daily_data["outputflow"] / 1000,
+    #         mode="lines",
+    #         name="Output Flow",
+    #         line=dict(color="#8B4513"),
+    #     )
+    # )
+
+    # Add grouped bar chart
     fig.add_trace(
-        go.Scatter(
-            x=daily_data["timestamp"],
-            y=daily_data["outputflow"] / 1000,
-            mode="lines",
-            name="Output Flow",
-            line=dict(color="#8B4513"),
-        )
+        go.Bar(x=daily_data['timestamp'], y=daily_data['inputflow'] / 1000, name='Input Flow', marker=dict(color='#18A4F9')),
+    )
+    fig.add_trace(
+        go.Bar(x=daily_data['timestamp'], y=daily_data['outputflow'] / 1000, name='Output Flow', marker=dict(color='#18F6F9')),
     )
 
     # Add line chart for output TDS
@@ -367,26 +375,26 @@ def create_table_chart(df):
     # )
 
     # Update layout
-    fig.update_layout(
-        height=500,
-        showlegend=True,
-        title="Daily Water Input and Output Flow with Average Output TDS",
-        xaxis=dict(
-            title="Timestamp",
-            tickfont=dict(size=14),
-            color="black",
-            showline=True,
-            linewidth=2,
-        ),
-        yaxis=dict(
-            title="Water Volume (in kl)",
-            side="left",
-            showgrid=True,
-            showline=True,
-            tickfont=dict(size=12),
-            color="black",
-            linewidth=2,
-        ),
+    # fig.update_layout(
+    #     height=500,
+    #     showlegend=True,
+    #     title="Daily Water Input and Output Flow with Average Output TDS",
+    #     xaxis=dict(
+    #         title="Timestamp",
+    #         tickfont=dict(size=14),
+    #         color="black",
+    #         showline=True,
+    #         linewidth=2,
+    #     ),
+    #     yaxis=dict(
+    #         title="Water Volume (in kl)",
+    #         side="left",
+    #         showgrid=True,
+    #         showline=True,
+    #         tickfont=dict(size=12),
+    #         color="black",
+    #         linewidth=2,
+    #     ),
         # yaxis2=dict(
         #     title="Output TDS (in ppm)",
         #     overlaying="y",
@@ -398,15 +406,20 @@ def create_table_chart(df):
         #     color="black",
         #     linewidth=2,
         # ),
-        plot_bgcolor="#FFFFFF",
-        paper_bgcolor="#FFFFFF",
-        font=dict(color="#000000"),
-        legend=dict(
-            orientation="h",  # "h" for horizontal, "v" for vertical
-            x=0.5,  # Position of the legend along the x-axis (0 to 1)
-            y=1.1,
-        ),
-    )
+    #     plot_bgcolor="#FFFFFF",
+    #     paper_bgcolor="#FFFFFF",
+    #     font=dict(color="#000000"),
+    #     legend=dict(
+    #         orientation="h",  # "h" for horizontal, "v" for vertical
+    #         x=0.5,  # Position of the legend along the x-axis (0 to 1)
+    #         y=1.1,
+    #     ),
+    # )
+    fig.update_layout(height=500, showlegend=True,
+                      title='Daily Water Input and Output Flow',
+                      xaxis=dict(title='Timestamp', tickfont=dict(size=14)),
+                      yaxis=dict(title='Water Volume (in kl)', side='left', showgrid=False, tickfont=dict(size=12)),
+                      plot_bgcolor='white')
 
     # return html.Div(
     #     [

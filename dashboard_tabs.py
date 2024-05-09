@@ -22,10 +22,13 @@ dashboard_app.layout = html.Div([
     # Header with logos
     html.Div([
         html.Img(src="static/logo.png", style={'height':'90px', 'width':'auto', 'float':'left'}),
-        html.H1("Water Kiosk", style={'text-align':'center', 'flex-grow':'1', 'color':'#010738'}),
-        html.H3("CDI Technology", style={'text-align':'center', 'flex-grow':'1', 'color':'#010738'}),
+        html.Div([
+            html.H1("Water Kiosk", style={'text-align':'center', 'color':'#010738'}),
+            html.H3("Gandhipura", style={'text-align':'center', 'color':'#010738'}),
+        ], style={'text-align': 'center', 'flex-grow':'1'}),
         html.Img(src="static/sponsor_logo.png", style={'height':'130px', 'width':'auto', 'float':'right'}),
-     ], style={'display':'flex', 'justify-content':'space-between', 'align-items':'center','background-color':'#f5f5f5', 'padding':'2px'}),
+    ], style={'display':'flex', 'justify-content':'space-between', 'align-items':'center','background-color':'#f5f5f5', 'padding':'2px'}),
+
 
     
     # Tabs for dashboard and table
