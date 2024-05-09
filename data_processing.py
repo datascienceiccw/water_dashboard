@@ -51,6 +51,8 @@ def filter_data_monthly(from_date, to_date):
     df = preprocess_data()
     from_date = parser.parse(from_date)
     to_date = parser.parse(to_date)
+    df = df[(df['inputtds'] != 0)]
+    df = df[(df['outputtds'] != 0)]
     df = df[(df['timestamp'].dt.date >= from_date.date()) & (df['timestamp'].dt.date <= to_date.date())]
     df.set_index('timestamp', inplace=True)
     return df.resample('ME').agg({'inputflow': 'sum', 'outputflow': 'sum', 'inputtds': 'mean', 'outputtds': 'mean'}).reset_index()

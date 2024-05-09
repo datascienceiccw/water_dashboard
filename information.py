@@ -23,8 +23,10 @@ def create_widgets(df):
 
 def update_dials(df):
     filtered_hourly_data = filter_data_hourly()
+    filtered_monthly_data = filter_data_monthly(str(df['timestamp'].min()), str(df['timestamp'].max()))
 
-    water_served = round((df["outputflow"].iloc[-1] - 10000) / 1000, 2)
+    # water_served = round((df["outputflow"].iloc[-1] - 10000) / 1000, 2)
+    water_served = round(filtered_monthly_data['outputflow'].iloc[-1]/1000, 2)
     water_saved = round(
         (
             0.4
@@ -67,7 +69,7 @@ def update_dials(df):
         (f"Water Saved (kl)", water_saved),
         (f"Current Input TDS (ppm)", avg_input_tds),
         (f"Current Output TDS (ppm)", avg_output_tds),
-        (f"Plant Running Status", mode, message),
+        (f"Plant Status", mode, message),
     )
 
 
@@ -117,7 +119,7 @@ def create_dials(df):
                             html.Span(
                                 update_dials(df)[0][1],
                                 style={
-                                    "font-size": "60px",
+                                    "font-size": "50px",
                                     "margin-right": "3px",
                                     "color": "#010738",
                                 },
@@ -130,8 +132,8 @@ def create_dials(df):
                             "display": "inline-block",
                             "margin": "15px",
                             "padding": "20px",
-                            "width": "15%",
-                            "height": "45%",
+                            "width": "16%",
+                            "height": "50%",
                             "background-color": "white",
                             "font-weight": "bold",
                             "font-size": "20px",
@@ -165,7 +167,7 @@ def create_dials(df):
                             "display": "inline-block",
                             "margin": "15px",
                             "padding": "20px",
-                            "width": "15%",
+                            "width": "14%",
                             "height": "45%",
                             "background-color": "white",
                             "font-weight": "bold",
@@ -352,17 +354,17 @@ def create_table_chart(df):
     )
 
     # Add line chart for output TDS
-    fig.add_trace(
-        go.Scatter(
-            x=daily_data["timestamp"],
-            y=daily_data["outputtds"],
-            yaxis="y2",
-            mode="lines",
-            fill="tozeroy",
-            name="Output TDS",
-            line=dict(color="#78fab9"),
-        )
-    )
+    # fig.add_trace(
+    #     go.Scatter(
+    #         x=daily_data["timestamp"],
+    #         y=daily_data["outputtds"],
+    #         yaxis="y2",
+    #         mode="lines",
+    #         fill="tozeroy",
+    #         name="Output TDS",
+    #         line=dict(color="#78fab9"),
+    #     )
+    # )
 
     # Update layout
     fig.update_layout(
@@ -385,17 +387,17 @@ def create_table_chart(df):
             color="black",
             linewidth=2,
         ),
-        yaxis2=dict(
-            title="Output TDS (in ppm)",
-            overlaying="y",
-            side="right",
-            range=[daily_data["outputtds"].min(), daily_data["outputtds"].max()],
-            showgrid=False,
-            showline=True,
-            tickfont=dict(size=12),
-            color="black",
-            linewidth=2,
-        ),
+        # yaxis2=dict(
+        #     title="Output TDS (in ppm)",
+        #     overlaying="y",
+        #     side="right",
+        #     range=[daily_data["outputtds"].min(), daily_data["outputtds"].max()],
+        #     showgrid=False,
+        #     showline=True,
+        #     tickfont=dict(size=12),
+        #     color="black",
+        #     linewidth=2,
+        # ),
         plot_bgcolor="#FFFFFF",
         paper_bgcolor="#FFFFFF",
         font=dict(color="#000000"),
