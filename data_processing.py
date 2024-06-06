@@ -11,6 +11,7 @@ def preprocess_data(date_format="%d-%b-%Y %H:%M:%S"):
     df = pd.DataFrame(data)
     df['timestamp'] = pd.to_datetime(df['timestamp'], format=date_format, errors='coerce')
     df.dropna(subset=['timestamp'], inplace=True)
+    df.fillna(0, inplace=True)
     df['inputflow'] = df['inputflow'].round().astype(int)
     df['outputflow'] = df['outputflow'].round().astype(int)
     df['inputtds'] = df['inputtds'].round().astype(int)
